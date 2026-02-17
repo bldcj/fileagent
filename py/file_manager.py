@@ -114,7 +114,12 @@ def web_rm():
         abort(400)
     else:
         if os.path.exists(p):
-            shutil.rmtree(p)
+            if os.path.isfile(p):
+                os.remove(p)
+            elif os.path.isdir(p): 
+                shutil.rmtree(p)
+            else:
+                return "Unsupported path."
             return "Done."
         else:
             return "No such file or directory"
