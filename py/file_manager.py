@@ -100,16 +100,19 @@ def web_get_text():
 @app.get("/mkdir")
 def web_mkdir():
     p=request.args.get("p")
-    if os.path.exists(os.path.dirname(p)):
-        os.mkdir(p)
-        root=ET.Element("directory")
-        root.attrib["path"]=p
-        xml=bytes.decode(ET.tostring(ls(p,0,root),encoding="UTF-8"))
-        response=Response(xml,status=200)
-        response.headers["Content-Type"]="application/xml"
-        return response
+    if os.path.exists(p):
+        return "Existed directory."
     else:
-        return "No parent directory."
+        if os.path.exists(os.path.dirname(p)):
+            os.mkdir(p)
+            root=ET.Element("directory")
+            root.attrib["path"]=p
+            xml=bytes.decode(ET.tostring(ls(p,0,root),encoding="UTF-8"))
+            response=Response(xml,status=200)
+            response.headers["Content-Type"]="application/xml"
+            return response
+        else:
+            return "No parent directory."
 
 @app.get("/rm")
 def web_rm():

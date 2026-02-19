@@ -382,7 +382,7 @@ export default {
       paste:false,
       fileStat:false,
       modifyKeywords:false,
-      moveDirs:true
+      moveDirs:false
     },
     snackbar:{
       show:false,
@@ -823,6 +823,7 @@ export default {
           this.uploadKeywords(this.filesForKeywords[file].path,this.filesForKeywords[file].keywords);
         }
       }
+      this.ls();
     },
     validateKeyword(keyword){
       if(keyword.match(/\s/)){
@@ -896,7 +897,8 @@ export default {
       return str;
     },
     async moveDirs(tree){
-      this.cd(tree.path);
+      var cp=this.currentPath;
+      await this.cd(tree.path);
       for(let dir in tree.directory){
         if(tree.directory[dir].type=='folder'){
           tree.directory[dir].path=tree.path+this.slash+tree.directory[dir].path;
@@ -919,7 +921,7 @@ export default {
               url:this.fileAPI+'/cut',
               params:{
                 s:tree.directory[dir].path,
-                d:tree.path+this.slash+tree.directory[dir].path.split(this.slash).pop()
+                d:this.currentPath+this.slash+tree.directory[dir].path.split(this.slash).pop()
               }
             })
             .then((response)=>{
@@ -927,6 +929,10 @@ export default {
             });
           }
         }
+      }
+      if(!tree.type){
+        await this.cd(cp);
+        this.ls();
       }
     }
   },
