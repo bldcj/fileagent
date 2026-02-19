@@ -17,7 +17,8 @@ def ls(path,if_get_child,tree):
     if os.path.exists(path):
         os.chdir(path)
         dirs=os.listdir()
-        manifest_path=os.path.join(os.path.dirname(path),"fileagent_keywords.json")
+        manifest_path=""
+        manifest_path=os.path.join(path,"fileagent_keywords.json")
         metadata={}
         if os.path.exists(manifest_path):
             with open(manifest_path,mode="r") as manifest:
@@ -28,21 +29,24 @@ def ls(path,if_get_child,tree):
                 child_folder.attrib["name"]=file
                 info=os.stat(file)
                 child_folder.attrib["time"]=datetime.fromtimestamp(int(info.st_mtime)).strftime("%Y-%m-%d %H:%M:%S")
+                child_folder.attrib["path"]=os.path.abspath(file)
                 if if_get_child==1:
                     ls(file,1,child_folder)
                     os.chdir("../")
             elif os.path.isfile(file):
-                child_file=ET.SubElement(tree,"file")
-                child_file.attrib["name"]=file
-                info=os.stat(file)
-                child_file.attrib["time"]=datetime.fromtimestamp(int(info.st_mtime)).strftime("%Y-%m-%d %H:%M:%S")
-                child_file.attrib["size"]=str(info.st_size)
-                if file in metadata:
-                    keywords=""
-                    for k in metadata[file]["keywords"]:
-                        keywords=keywords+k+" "
-                    keywords=keywords[0:-1]
-                    child_file.attrib["keywords"]=keywords
+                if file!="fileagent_keywords.json":
+                    child_file=ET.SubElement(tree,"file")
+                    child_file.attrib["name"]=file
+                    info=os.stat(file)
+                    child_file.attrib["time"]=datetime.fromtimestamp(int(info.st_mtime)).strftime("%Y-%m-%d %H:%M:%S")
+                    child_file.attrib["size"]=str(info.st_size)
+                    child_file.attrib["path"]=os.path.abspath(file)
+                    if file in metadata:
+                        keywords=""
+                        for k in metadata[file]["keywords"]:
+                            keywords=keywords+k+" "
+                        keywords=keywords[0:-1]
+                        child_file.attrib["keywords"]=keywords
         return tree
 
 app=Flask(__name__)
@@ -145,7 +149,12 @@ def web_copy():
     d=request.args.get("d")
     if os.path.exists(s):
         if os.path.exists(os.path.dirname(d)):
-            shutil.copytree(s,d)
+            if os.path.isfile(s):
+                shutil.copy(s,d)
+            elif os.path.isdir(s):
+                shutil.copytree(s,d)
+            else:
+                return "Unsupported path."
             return "Done."
         else:
             return "Need parent directory."
@@ -158,8 +167,14 @@ def web_cut():
     d=request.args.get("d")
     if os.path.exists(s):
         if os.path.exists(os.path.dirname(d)):
-            shutil.copytree(s,d)
-            shutil.rmtree(s)
+            if os.path.isfile(s):
+                shutil.copy(s,d)
+                os.remove(s)
+            elif os.path.isdir(s):
+                shutil.copytree(s,d)
+                shutil.rmtree(s)
+            else:
+                return "Unsupported path."
             return "Done."
         else:
             return "Need parent directory."
@@ -189,7 +204,7 @@ def web_store_keywords():
                 with open(manifest_path,mode="r") as manifest:
                     data=json.loads(manifest.read())
             data[os.path.basename(p)]={"keywords":keywords}
-            with open(os.path.join(os.path.dirname(p)+"fileagent_keywords.json"),mode="w") as manifest:
+            with open(manifest_path,mode="w") as manifest:
                 data=json.dumps(data)
                 manifest.write(data)
             return data
