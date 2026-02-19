@@ -1,13 +1,13 @@
 <template>
   <v-app>
     <v-main>
-      <v-app-bar elevation="1" rounded>
-        <template v-slot:prepend>
-          <v-app-bar-nav-icon></v-app-bar-nav-icon>
-        </template>
+      <v-app-bar elevation="1" rounded color="teal">
         <v-app-bar-title>FileAgent</v-app-bar-title>
+        <template v-slot:append>
+          <v-btn icon="mdi-wrench" @click="dialogList.settings=true" variant="text"></v-btn>
+        </template>
       </v-app-bar>
-      <v-snackbar v-model="snackbar.show" rounded="pill">
+      <v-snackbar v-model="snackbar.show" rounded="pill" color="teal">
         {{snackbar.text}}
         <template v-slot:actions>
           <v-btn color="white" variant="text" icon="mdi-close" @click="snackbar.show=false"></v-btn>
@@ -19,20 +19,20 @@
           <v-card-subtitle>包括关键词范围等，也可指定关键词供模型选择。如：“按照作业的学科分类”、“从文档、书籍中选择一个关键词”</v-card-subtitle>
           <v-row justify="center" align="center">
             <v-col cols="10">
-              <v-text-field v-model="keywordsQuery" variant="underlined"></v-text-field>
+              <v-text-field v-model="keywordsQuery" variant="underlined" color="teal"></v-text-field>
             </v-col>
           </v-row>
           <v-row>
             <v-spacer></v-spacer>
             <v-col cols="3" align="center">
               <h5>关键词数量</h5>
-              <v-number-input v-model="keywordsNumber" :min="1" :max="10" :precision="0"></v-number-input>
+              <v-number-input v-model="keywordsNumber" :min="1" :max="10" :precision="0" variant="split" color="teal"></v-number-input>
             </v-col>
             <v-col cols="1"></v-col>
           </v-row>
           <template v-slot:actions>
             <v-btn text="取消" @click="dialogList.keywords=false;keywordsQuery='';" color="grey"></v-btn>
-            <v-btn text="确认" @click="generateKeywords();dialogList.keywords=false;" color="blue" :disabled="keywordsQuery.length==0"></v-btn>
+            <v-btn text="确认" @click="generateKeywords();dialogList.keywords=false;" color="teal" :disabled="keywordsQuery.length==0"></v-btn>
           </template>
         </v-card>
       </v-dialog>
@@ -42,7 +42,7 @@
           <v-card-text>确定要删除<span v-for="file in selectedFiles" :key="file">"{{file}}"</span>吗？</v-card-text>
           <template v-slot:actions>
             <v-btn text="取消" @click="dialogList.rm=false" color="grey"></v-btn>
-            <v-btn text="确认" @click="rm();dialogList.rm=false;" color="blue"></v-btn>
+            <v-btn text="确认" @click="rm();dialogList.rm=false;" color="teal"></v-btn>
           </template>
         </v-card>
       </v-dialog>
@@ -52,12 +52,12 @@
           <v-card-text>输入文件夹名称</v-card-text>
           <v-row justify="center">
             <v-col cols="10">
-              <v-text-field v-model="newDirName" variant="underlined" :rules="[validateDirName]"></v-text-field>
+              <v-text-field v-model="newDirName" variant="underlined" :rules="[validateDirName]" color="teal"></v-text-field>
             </v-col>
           </v-row>
           <template v-slot:actions>
             <v-btn text="取消" @click="dialogList.mkdir=false;newDirname='';" color="grey"></v-btn>
-            <v-btn text="确认" @click="mkdir();dialogList.mkdir=false;" color="blue" :disabled="newDirName.length==0"></v-btn>
+            <v-btn text="确认" @click="mkdir();dialogList.mkdir=false;" color="teal" :disabled="newDirName.length==0"></v-btn>
           </template>
         </v-card>
       </v-dialog>
@@ -67,7 +67,7 @@
           <v-card-text>确定要把<span v-for="dir in fileClipboard.dirs" :key="dir">"{{dir}}"</span>粘贴到此处吗？</v-card-text>
           <template v-slot:actions>
             <v-btn text="取消" @click="dialogList.paste=false" color="grey"></v-btn>
-            <v-btn text="确认" @click="paste();dialogList.paste=false;" color="blue"></v-btn>
+            <v-btn text="确认" @click="paste();dialogList.paste=false;" color="teal"></v-btn>
           </template>
         </v-card>
       </v-dialog>
@@ -106,7 +106,23 @@
             </v-list-item>
           </v-list>
           <template v-slot:actions>
-            <v-btn text="确认" @click="dialogList.fileStat=false" color="blue"></v-btn>
+            <v-btn text="重命名" @click="newFileName='';dialogList.rename=true;" color="teal"></v-btn>
+            <v-btn text="确认" @click="dialogList.fileStat=false" color="teal"></v-btn>
+          </template>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="dialogList.rename" width="300px">
+        <v-card>
+          <v-card-title>重命名</v-card-title>
+          <v-row justify="center">
+            <v-col cols="10">
+              <v-card-text>输入新的文件名</v-card-text>
+              <v-text-field v-model="newFileName" :rules="[validateDirName]" color="teal"></v-text-field>
+            </v-col>
+          </v-row>
+          <template v-slot:actions>
+            <v-btn text="取消" @click="dialogList.rename=false" color="grey"></v-btn>
+            <v-btn text="确认" @click="rename();dialogList.rename=false;" color="teal"></v-btn>
           </template>
         </v-card>
       </v-dialog>
@@ -120,6 +136,7 @@
                 :key="keyword"
                 closable
                 @click:close="temporaryKeywords.splice(index,1)"
+                color="teal-lighten-3"
               >{{ keyword }}</v-chip>
             </v-col>
           </v-row>
@@ -132,6 +149,7 @@
                 :rules="[validateKeyword]"
                 append-icon="mdi-plus"
                 @click:append="addKeyword()"
+                color="teal"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -140,7 +158,7 @@
             <v-btn
               text="确认"
               @click="uploadKeywords(fileStat.path,temporaryKeywords).then(()=>ls());dialogList.modifyKeywords=false;"
-              color="blue"
+              color="teal"
               :disabled="temporaryKeywords.length==0"
             ></v-btn>
           </template>
@@ -154,14 +172,70 @@
           </v-card-text>
           <template v-slot:actions>
             <v-btn text="取消" @click="dialogList.moveDirs=false" color="grey"></v-btn>
-            <v-btn text="确认" @click="moveDirs(objDirs);dialogList.moveDirs=false;" color="blue"></v-btn>
+            <v-btn text="确认" @click="moveDirs(objDirs);dialogList.moveDirs=false;" color="teal"></v-btn>
+          </template>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="dialogList.settings" width="500px">
+        <v-card height="500px" class="overflow-auto">
+          <v-card-title>设置</v-card-title>
+          <v-row justify="center">
+            <v-col cols="10">
+              <v-list >
+                <v-list-item>
+                  <v-list-item-title>文件API链接</v-list-item-title>
+                  <v-text-field v-model="fileAPI" color="teal"></v-text-field>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-title>Dify API链接</v-list-item-title>
+                  <v-text-field v-model="difyAPI" color="teal"></v-text-field>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-title>记忆上次打开的目录</v-list-item-title>
+                  <template v-slot:prepend>
+                    <v-checkbox-btn v-model="preferences.rememberPath" color="teal"></v-checkbox-btn>
+                  </template>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-title>默认路径</v-list-item-title>
+                  <v-text-field v-model="preferences.defaultPath" color="teal"></v-text-field>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-title>目录递归深度</v-list-item-title>
+                  <v-list-item-subtitle>默认值为0，-1为无限制，过高的值可能引发错误</v-list-item-subtitle>
+                  <v-number-input
+                    v-model="preferences.depth"
+                    variant="split"
+                    :min="-1"
+                    :max="10"
+                    :precision="0"
+                    color="teal"
+                  ></v-number-input>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-title>默认生成关键词个数</v-list-item-title>
+                  <v-number-input
+                    v-model="preferences.keywordsNumber"
+                    variant="split"
+                    :min="1"
+                    :max="10"
+                    :precision="0"
+                    color="teal"
+                  ></v-number-input>
+                </v-list-item>
+              </v-list>
+            </v-col>
+          </v-row>
+          <template v-slot:actions>
+            <v-btn text="取消" @click="getPreferences();dialogList.settings=false" color="grey"></v-btn>
+            <v-btn text="确认" @click="setPreferences();dialogList.settings=false;" color="teal"></v-btn>
           </template>
         </v-card>
       </v-dialog>
       <v-container>
         <v-row>
           <v-col cols="1">
-              <v-fab icon>
+              <v-fab icon :color="isSpeedDialOpen?'teal-accent-1':'teal'">
                 <v-icon>{{ isSpeedDialOpen?'mdi-close':'mdi-dots-vertical' }}</v-icon>
                 <v-speed-dial
                   v-model="isSpeedDialOpen"
@@ -177,6 +251,7 @@
                         key="6"
                         @click="dialogList.keywords=true"
                         v-bind="props"
+                        color="teal-lighten-5"
                         ></v-btn>
                     </template>
                   </v-tooltip>
@@ -188,6 +263,7 @@
                         key="5"
                         @click="dialogList.mkdir=true"
                         v-bind="props"
+                        color="teal-lighten-5"
                         ></v-btn>
                     </template>
                   </v-tooltip>
@@ -200,6 +276,7 @@
                         @click="dialogList.rm=true"
                         key="4"
                         v-bind="props"
+                        color="teal-lighten-5"
                         ></v-btn>
                     </template>
                   </v-tooltip>
@@ -212,6 +289,7 @@
                         key="3"
                         v-bind="props"
                         @click="dialogList.paste=true"
+                        color="teal-lighten-5"
                         ></v-btn>
                     </template>
                   </v-tooltip>
@@ -224,6 +302,7 @@
                         key="2"
                         v-bind="props"
                         @click="cut()"
+                        color="teal-lighten-5"
                         ></v-btn>
                     </template>
                   </v-tooltip>
@@ -236,6 +315,7 @@
                         key="1"
                         v-bind="props"
                         @click="copy()"
+                        color="teal-lighten-5"
                         ></v-btn>
                     </template>
                   </v-tooltip>
@@ -249,6 +329,7 @@
               :items="getParentDirs()"
               @change="changePath()"
               @blur="changePath()"
+              color="teal"
             ></v-combobox>
             <v-list
               lines="one"
@@ -259,9 +340,9 @@
             >
               <v-list-item v-if="currentPath.lastIndexOf(slash)!=currentPath.length-1">
                 <template v-slot:prepend> 
-                  <v-icon icon="mdi-arrow-up"></v-icon>
+                  <v-icon icon="mdi-arrow-up" color="teal-darken-3"></v-icon>
                   <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                  <v-icon icon="mdi-folder-outline"></v-icon>
+                  <v-icon icon="mdi-folder-outline" color="teal-darken-3"></v-icon>
                 </template>
                 <v-list-item-title @click="navPath=navPath+slash+'..'+slash;changePath()">..{{ slash }}</v-list-item-title>
               </v-list-item>
@@ -271,14 +352,14 @@
               >
                 <template v-slot:prepend>
                   <v-list-item-action start>
-                    <v-checkbox-btn v-model="selectedFiles" :value="file.path" @click="checkToolBar()"></v-checkbox-btn>
+                    <v-checkbox-btn v-model="selectedFiles" :value="file.path" @click="checkToolBar()" color="teal-darken-3"></v-checkbox-btn>
                   </v-list-item-action>
-                  <v-icon :icon="file.type=='folder'?'mdi-folder-outline':'mdi-file-outline'"></v-icon>
+                  <v-icon :icon="file.type=='folder'?'mdi-folder-outline':'mdi-file-outline'" color="teal-darken-3"></v-icon>
                 </template>
                 <v-list-item-title @click="navPath=navPath+slash+file.name;changePath()">{{ file.name }}</v-list-item-title>
                 <v-list-item-subtitle>{{ file.time }}&nbsp;{{ file.size?(file.size>=0x400?file.size>=0x100000?file.size>=0x40000000?file.size/0x40000000:file.size/0x100000:file.size/0x400:file.size):'' }}{{ file.size?(file.size>=0x400?file.size>=0x100000?file.size>=0x40000000?'GB':'MB':'KB':'B'):'' }}</v-list-item-subtitle>
                 <template v-slot:append>
-                  <v-btn icon="mdi-dots-horizontal" @click="showStat(file)" variant="text"></v-btn>
+                  <v-btn icon="mdi-dots-horizontal" @click="showStat(file)" variant="text" color="teal-darken-3"></v-btn>
                 </template>
               </v-list-item>
             </v-list>
@@ -291,20 +372,20 @@
             >
               <v-progress-linear
                 v-if="isChatting"
-                color="deep-blue"
+                color="teal-darken-3"
                 height="4"
                 indeterminate
               ></v-progress-linear>
               <v-row v-for="(record,index) in chatRecords" :key="index" :justify="record.source=='user'?'end':'start'">
                 <v-col cols="10">
-                  <v-card :color="record.source=='user'?'blue-lighten-4':'white'">
+                  <v-card :color="record.source=='user'?'blue-lighten-3':'teal-lighten-3'">
                     <v-expansion-panels v-if="record.source=='model'" v-model="record.showThought">
-                      <v-expansion-panel value="pop">
-                        <v-expansion-panel-title>{{ record.showThought=='pop'?'思考中……':record.type=='error'||record.message.match(/^\s*$/)?'已完成部分思考，等待下一步指令':'已完成思考' }}</v-expansion-panel-title>
-                        <v-expansion-panel-text>{{ record.thought }}</v-expansion-panel-text>
+                      <v-expansion-panel value="pop" color="teal-lighten-3">
+                        <v-expansion-panel-title>{{ record.type=='thinking'?'思考中……':record.type=='error'||record.message.match(/^\s*$/)?'已完成部分思考，等待下一步指令':'已完成思考' }}</v-expansion-panel-title>
+                        <v-expansion-panel-text color="teal-lighten-4">{{ record.thought }}</v-expansion-panel-text>
                       </v-expansion-panel>
                     </v-expansion-panels>
-                    <v-chip v-if="record.message.match(/^\{[\s\S]*\}$/)" @click="this.objDirs=JSON.parse(record.message);this.dialogList.moveDirs=true">目录结构</v-chip>
+                    <v-chip v-if="record.message.match(/^\{[\s\S]*\}$/)" @click="this.objDirs=JSON.parse(record.message);this.dialogList.moveDirs=true" color="teal" variant="outlined">目录结构</v-chip>
                     <v-card-text v-else>{{ record.message }}</v-card-text>
                   </v-card>
                 </v-col>
@@ -315,6 +396,7 @@
               variant="underlined"
               append-icon="mdi-send"
               @click:append="callLLM()"
+              color="teal"
             ></v-textarea>
           </v-col>
         </v-row>
@@ -343,6 +425,7 @@ export default {
     currentPath:'D:\\',
     navPath:'',
     newDirName:'',
+    newFileName:'',
     chatText:'',
     chatResponse:'',
     chatRecords:[],
@@ -353,7 +436,7 @@ export default {
     newKeyword:'',
     isChatting:false,
     isSpeedDialOpen:false,
-    objDirs:JSON.parse('{"path": "D:\\\\分类测试", "directory": [{"type": "folder", "path": "语文", "directory": [{"type": "file", "path": "D:\\\\分类测试\\\\1.txt"}, {"type": "file", "path": "D:\\\\分类测试\\\\4.txt"}]}, {"type": "folder", "path": "数学", "directory": [{"type": "file", "path": "D:\\\\分类测试\\\\2.txt"}, {"type": "file", "path": "D:\\\\分类测试\\\\3.txt"}]}, {"type": "folder", "path": "英语", "directory": [{"type": "file", "path": "D:\\\\分类测试\\\\5.txt"}, {"type": "file", "path": "D:\\\\分类测试\\\\6.txt"}, {"type": "file", "path": "D:\\\\分类测试\\\\7.txt"}]}]}'),
+    objDirs:{},
     fileStat:{
       type:'',
       name:'',
@@ -382,7 +465,9 @@ export default {
       paste:false,
       fileStat:false,
       modifyKeywords:false,
-      moveDirs:false
+      moveDirs:false,
+      rename:false,
+      settings:false
     },
     snackbar:{
       show:false,
@@ -391,9 +476,78 @@ export default {
     fileClipboard:{
       action:'',
       dirs:[]
+    },
+    preferences:{
+      rememberPath:false,
+      defaultPath:'D:\\',
+      depth:0,
+      keywordsNumber:3
     }
   }),
   methods:{
+    async setPreferences(){
+      localStorage.setItem('preferences',JSON.stringify({
+        fileAPI:this.fileAPI,
+        difyAPI:this.difyAPI,
+        rememberPath:this.preferences.rememberPath,
+        defaultPath:this.preferences.defaultPath,
+        depth:this.preferences.depth,
+        keywordsNumber:this.preferences.keywordsNumber
+      }));
+      return this.$axios({
+        method:'post',
+        url:this.fileAPI+'/preferences/set',
+        data:{
+          preferences:{
+            fileAPI:this.fileAPI,
+            difyAPI:this.difyAPI,
+            rememberPath:this.preferences.rememberPath,
+            defaultPath:this.preferences.defaultPath,
+            depth:this.preferences.depth,
+            keywordsNumber:this.preferences.keywordsNumber
+          }
+        }
+      })
+      .then((response)=>{
+        console.log(response);
+      });
+    },
+    async getPreferences(){
+      let p=localStorage.getItem('preferences');
+      if(p){
+        p=JSON.parse(p);
+        this.preferences={
+          rememberPath:p.rememberPath,
+          defaultPath:p.defaultPath,
+          depth:p.depth,
+          keywordsNumber:p.keywordsNumber
+        }
+        this.fileAPI=p.fileAPI;
+        this.difyAPI=p.difyAPI;
+      }
+      else{
+        return this.$axios({
+          method:'get',
+          url:this.fileAPI+'/preferences/get',
+        })
+        .then((response)=>{
+          if(response.data=='0'){
+            this.setPreferences();
+          }
+          else{
+            p=JSON.parse(response.data);
+            this.preferences={
+              rememberPath:p.rememberPath,
+              defaultPath:p.defaultPath,
+              depth:p.depth,
+              keywordsNumber:p.keywordsNumber
+            }
+            this.fileAPI=p.fileAPI;
+            this.difyAPI=p.difyAPI;
+          }
+        });
+      }
+    },
     ls(){
       this.$axios({
         method:'get',
@@ -499,8 +653,8 @@ export default {
       }
     },
     validateDirName(name){
-      if(name.match(/([<>:"/\\|?*]|CON|PRN|AUX|NUL|COM\d|LPT\d)+/)){
-        return '文件夹名称含有非法字符';
+      if(name.match(/([<>:"/\\|?*]+)|(^CON$)|(^PRN$)|(^AUX$)|(^NUL$)|(^COM\d$)|(^LPT\d$)/)){
+        return '名称含有非法字符';
       }
       else{
         return true;
@@ -816,6 +970,7 @@ export default {
       console.log(this.currentPath);
       console.log(this.selectedFiles);
       console.log(this.filesForKeywords);
+      this.showSnackbar('正在生成关键词');
       for(let file in this.filesForKeywords){
         await this.getKeywords(file,query,this.keywordsNumber);
         if(this.filesForKeywords[file].stat){
@@ -868,6 +1023,28 @@ export default {
         this.fileStat.ctime=stat[9];
         this.dialogList.fileStat=true;
       })
+    },
+    async rename(){
+      if(this.validateDirName(this.newFileName)===true){
+        await this.$axios({
+          method:'get',
+          url:this.fileAPI+'/rename',
+          params:{
+            p:this.currentPath,
+            s:this.fileStat.name,
+            d:this.newFileName
+          }
+        })
+        .then((response)=>{
+          console.log(response.data);
+        });
+        await this.ls();
+        this.dialogList.fileStat=false;
+        this.showSnackbar('Done.');
+      }
+      else{
+        this.showSnackbar('名称含有非法字符');
+      }
     },
     showSnackbar(text){
       this.snackbar.text=text;
@@ -933,10 +1110,26 @@ export default {
       if(!tree.type){
         await this.cd(cp);
         this.ls();
+        this.showSnackbar('Done.');
       }
     }
   },
-  created(){
+  async created(){
+    await this.getPreferences();
+    if(this.preferences.rememberPath){
+      await this.$axios({
+        method:'get',
+        url:this.fileAPI+'/lastdir'
+      })
+      .then((response)=>{
+        if(response.data){
+          this.currentPath=response.data;
+        }
+      });
+    }
+    else{
+      this.currentPath=this.preferences.defaultPath;
+    }
     this.navPath=this.currentPath;
     this.ls();
     this.cd(this.currentPath);

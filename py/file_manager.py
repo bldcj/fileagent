@@ -74,6 +74,8 @@ def web_cd():
     if p:
         if os.path.exists(p):
             os.chdir(p)
+            with open(os.path.join(os.path.dirname(__file__),"last_directory"),mode="w") as f:
+                f.write(p)
             return os.getcwd()
         else:
             return "no such directory."
@@ -214,12 +216,29 @@ def web_store_keywords():
     else:
         return "No such file."
 
+@app.route("/preferences/set",methods=["POST"])
+def web_set_preferences():
+    preferences=request.json.get("preferences")
+    data=""
+    with open(os.path.join(os.path.dirname(__file__),"preferences.json"),mode="w") as f:
+        data=json.dumps(preferences)
+        f.write(data)
+    return data
+
+@app.route("/preferences/get",methods=["GET"])
+def web_read_preferences():
+    p=os.path.join(os.path.dirname(__file__),"preferences.json")
+    if os.path.exists(p):
+        with open(p,mode="r") as f:
+            return f.read()
+    else:
+        return "0"
+    
+@app.get("/lastdir")
+def web_lastdir():
+    with open(os.path.join(os.path.dirname(__file__),"last_directory"),mode="r") as f:
+        return f.read()
+
 if __name__=="__main__":
     app.run(host="0.0.0.0")
 
-'''p=input()
-root=ET.Element("directory")
-root.attrib["path"]=p
-print(bytes.decode(ET.tostring(ls(p,True,root),encoding="UTF-8")))
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-ET.ElementTree(root).write("file_tree.xml")'''
