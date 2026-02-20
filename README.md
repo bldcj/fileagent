@@ -91,35 +91,51 @@
 ## 安装
 
 请先安装并配置好python、node.js、docker，然后运行
+
 `git clone https://github.com/bldcj/fileagent.git`
 
 ### 文件服务端
 `cd fileagent/py`
+
 建议创建虚拟环境并激活
+
 ```bash
 python -m venv .venv
 .venv/Scripts/activate
 ```
+
 安装依赖
+
 `pip install -r requirements.txt`
+
 服务端默认开放5000端口，将`py/preferences.json`中`fileAPI`的值改为`http://你的文件服务器地址:5000`
 
 ### webUI
 `cd fileagent/js`
+
 安装依赖并初始化环境
+
 `npm install`
+
 运行`vue ui`来启动vue web控制台进行serve或build
+
 或是通过以下命令执行
+
 `npm run serve`（用于开发环境）
+
 `npm run build`（用于生产环境）
+
 项目出现问题时使用`npm run lint`修复项目
+
 Vue项目的具体配置详见`js/README.md`
 
 ### Dify API
 Dify的安装与部署参见[Dify Docs-使用Docker Compose部署Dify](https://docs.dify.ai/zh/self-host/quick-start/docker-compose)
 
 在dify控制台-工作室中导入`fileagent.yml`,并在控制台-工具中新建自定义工具，将`filetools.json`的内容作为api文档导入。
+
 在模型设置中配置自己的模型api，见[Dify Docs-模型供应商](https://docs.dify.ai/zh/use-dify/workspace/model-providers)
+
 在控制台-访问API处复制API服务器地址及api密钥，将`py/preferences.json`中的`difyAPI`项的值改为API服务器地址，`difyAPIKey`的值改为api密钥。
 
 ### ollama（非必需）
@@ -132,21 +148,31 @@ Dify的安装与部署参见[Dify Docs-使用Docker Compose部署Dify](https://d
 
 ### 启动文件服务端
 `cd fileagent/py`
+
 若配置了虚拟环境则启动
+
 `.venv/Scripts/activate`
+
 运行服务
+
 `python file_manager.py`
 
 ### 启动webUI
 开发环境下，运行`npm run serve`即可在8080端口运行服务
+
 生产环境下，运行`npm run build`，将`js/dist`下生成的所有文件托管到web服务器即可
+
 第一次运行需要在webUI的设置面板中更改文件API和Dify API的地址（也可以在发行前手动更改`js/src/App.vue`中`fileAPI`和`difyAPI`的值）
 
 ### 使用webUI
 在浏览器中访问webUI的链接，进入主界面
+
 主界面分为三部分
+
 -上方为标题栏，点击右侧按钮可以打开设置面板
+
 -左侧为文件管理器，由可下拉选择父目录的地址栏和文件列表组成。文件管理器左侧的按钮为复制、粘贴等功能按钮
+
 -右侧为对话区，可以在文本框内输入指令并发送，与模型对话。对话结果显示在上方的聊天窗口中。模型的部分响应会被包装为标签，点击可以展开并执行对应的文件操作。
 
 ## 文件和目录结构
@@ -206,7 +232,7 @@ Dify的安装与部署参见[Dify Docs-使用Docker Compose部署Dify](https://d
 ```xml
 <directory path="/test">
   <folder name="folder1" time="2026-02-20 11:45:14">
-    <file name="file1" time="2026-02-20 11:45:14"/>
+    <file name="file1" time="2026-02-20 11:45:14" size="114514"/>
   </folder>
   <file name="file2" time="2026-02-20 11:45:14" size="1919810" keywords="关键词1 关键词2"/>
 </directory>
@@ -227,6 +253,7 @@ Dify的安装与部署参见[Dify Docs-使用Docker Compose部署Dify](https://d
 
 #### 请求示例
 `curl -X GET http://example.com:port/cd?p=/test/folder1`
+
 `curl -X GET http://example.com:port/cd`
 
 #### 响应示例
@@ -484,10 +511,16 @@ curl -X GET http://example.com:port/lastdir
 `/test`
 
 ## 相关项目
-[Dify](https://github.com/langgenius/dify)
-[Ollama](https://github.com/ollama/ollama)
-[flask](https://github.com/pallets/flask)
-[Vue](https://github.com/vuejs/core)
-[Vuetify](https://github.com/vuetifyjs/vuetify)
-[axios](https://github.com/axios/axios)
-[fetch-event-source](https://github.com/Azure/fetch-event-source)
+-[Dify](https://github.com/langgenius/dify)
+
+-[Ollama](https://github.com/ollama/ollama)
+
+-[flask](https://github.com/pallets/flask)
+
+-[Vue](https://github.com/vuejs/core)
+
+-[Vuetify](https://github.com/vuetifyjs/vuetify)
+
+-[axios](https://github.com/axios/axios)
+
+-[fetch-event-source](https://github.com/Azure/fetch-event-source)

@@ -13,7 +13,9 @@ from flask_cors import CORS
 
 import file_reader
 
-def ls(path,if_get_child,tree):
+depth=0
+
+def ls(path,d,tree):
     if os.path.exists(path):
         os.chdir(path)
         dirs=os.listdir()
@@ -30,8 +32,8 @@ def ls(path,if_get_child,tree):
                 info=os.stat(file)
                 child_folder.attrib["time"]=datetime.fromtimestamp(int(info.st_mtime)).strftime("%Y-%m-%d %H:%M:%S")
                 child_folder.attrib["path"]=os.path.abspath(file)
-                if if_get_child==1:
-                    ls(file,1,child_folder)
+                if d!=0:
+                    ls(file,d-1,child_folder)
                     os.chdir("../")
             elif os.path.isfile(file):
                 if file!="fileagent_keywords.json":
@@ -55,13 +57,12 @@ cors=CORS(app)
 @app.route("/ls")
 def web_ls():
     p=request.args.get("p")
-    c=int(request.args.get("c"))
-    if p is None or c is None:
+    if p is None:
         abort(400)
     if os.path.exists(p):
         root=ET.Element("directory")
         root.attrib["path"]=p
-        xml=bytes.decode(ET.tostring(ls(p,c,root),encoding="UTF-8"))
+        xml=bytes.decode(ET.tostring(ls(p,depth,root),encoding="UTF-8"))
         response=Response(xml,status=200)
         response.headers["Content-Type"]="application/xml"
         return response
@@ -220,6 +221,7 @@ def web_store_keywords():
 def web_set_preferences():
     preferences=request.json.get("preferences")
     data=""
+    depth=preferences["depth"]
     with open(os.path.join(os.path.dirname(__file__),"preferences.json"),mode="w") as f:
         data=json.dumps(preferences)
         f.write(data)
@@ -230,7 +232,9 @@ def web_read_preferences():
     p=os.path.join(os.path.dirname(__file__),"preferences.json")
     if os.path.exists(p):
         with open(p,mode="r") as f:
-            return f.read()
+            data=json.loads(f.read())
+            depth=data["depth"]
+            return json.dumps(data)
     else:
         return "0"
     

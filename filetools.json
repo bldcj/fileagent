@@ -31,13 +31,6 @@
                         "schema":{
                             "type":"string"
                         }
-                    },
-                    {
-                        "name":"c",
-                        "in":"query",
-                        "description":"是否遍历子目录，是为1，否为0，用户不指定时默认值为0",
-                        "required":true,
-                        "enum":[1,0]
                     }
                 ]
             }
