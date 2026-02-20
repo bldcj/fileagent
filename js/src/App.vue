@@ -191,6 +191,10 @@
                   <v-text-field v-model="difyAPI" color="teal"></v-text-field>
                 </v-list-item>
                 <v-list-item>
+                  <v-list-item-title>Dify API密钥</v-list-item-title>
+                  <v-text-field v-model="APIKey" color="teal"></v-text-field>
+                </v-list-item>
+                <v-list-item>
                   <v-list-item-title>记忆上次打开的目录</v-list-item-title>
                   <template v-slot:prepend>
                     <v-checkbox-btn v-model="preferences.rememberPath" color="teal"></v-checkbox-btn>
@@ -199,6 +203,10 @@
                 <v-list-item>
                   <v-list-item-title>默认路径</v-list-item-title>
                   <v-text-field v-model="preferences.defaultPath" color="teal"></v-text-field>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-title>路径分隔符</v-list-item-title>
+                  <v-text-field v-model="slash" color="teal"></v-text-field>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-title>目录递归深度</v-list-item-title>
@@ -418,6 +426,7 @@ export default {
   data:()=>({
     fileAPI:'http://192.168.1.3:5000',
     difyAPI:'http://192.168.1.3/v1',
+    APIKey:'app-VeSEBbcHrFP0SpYIeaJqWMmf',
     slash:'\\',
     dirs:[],
     selectedFiles:[],
@@ -489,6 +498,8 @@ export default {
       localStorage.setItem('preferences',JSON.stringify({
         fileAPI:this.fileAPI,
         difyAPI:this.difyAPI,
+        difyAPIKey:this.APIKey,
+        slash:this.slash,
         rememberPath:this.preferences.rememberPath,
         defaultPath:this.preferences.defaultPath,
         depth:this.preferences.depth,
@@ -501,6 +512,8 @@ export default {
           preferences:{
             fileAPI:this.fileAPI,
             difyAPI:this.difyAPI,
+            difyAPIKey:this.APIKey,
+            slash:this.slash,
             rememberPath:this.preferences.rememberPath,
             defaultPath:this.preferences.defaultPath,
             depth:this.preferences.depth,
@@ -524,6 +537,8 @@ export default {
         }
         this.fileAPI=p.fileAPI;
         this.difyAPI=p.difyAPI;
+        this.APIKey=p.difyAPIKey;
+        this.slash=p.slash;
       }
       else{
         return this.$axios({
@@ -544,6 +559,8 @@ export default {
             }
             this.fileAPI=p.fileAPI;
             this.difyAPI=p.difyAPI;
+            this.APIKey=p.difyAPIKey;
+            this.slash=p.slash;
           }
         });
       }
@@ -554,7 +571,6 @@ export default {
         url:this.fileAPI+'/ls',
         params:{
           p:this.currentPath,
-          c:0
         },
         responseType:'document'
       })
@@ -737,7 +753,7 @@ export default {
       fetchEventSource(this.difyAPI+'/chat-messages',{
         method:'POST',
         headers:{
-          'Authorization':'Bearer app-VeSEBbcHrFP0SpYIeaJqWMmf',
+          'Authorization':'Bearer '+this.APIKey,
           'Content-Type':'application/json'
         },
         body:JSON.stringify({
@@ -839,7 +855,7 @@ export default {
       return fetchEventSource(this.difyAPI+'/chat-messages',{
         method:'POST',
         headers:{
-          'Authorization':'Bearer app-VeSEBbcHrFP0SpYIeaJqWMmf',
+          'Authorization':'Bearer '+this.APIKey,
           'Content-Type':'application/json'
         },
         body:JSON.stringify({
@@ -1115,7 +1131,7 @@ export default {
     }
   },
   async created(){
-    await this.getPreferences();
+    await this.setPreferences();
     if(this.preferences.rememberPath){
       await this.$axios({
         method:'get',
@@ -1130,6 +1146,7 @@ export default {
     else{
       this.currentPath=this.preferences.defaultPath;
     }
+    this.currentPath=this.currentPath.replace(this.slash+this.slash,this.slash);
     this.navPath=this.currentPath;
     this.ls();
     this.cd(this.currentPath);
