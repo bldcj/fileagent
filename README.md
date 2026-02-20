@@ -205,8 +205,10 @@ Dify的安装与部署参见[Dify Docs-使用Docker Compose部署Dify](https://d
 #### 响应示例
 ```xml
 <directory path="/test">
-  <folder name="folder1" time="2026-02-20 11:45:14"></folder>
-  <file name="file2" time="2026-02-20 11:45:14" size="1919810" keywords="关键词1 关键词2"></file>
+  <folder name="folder1" time="2026-02-20 11:45:14">
+    <file name="file1" time="2026-02-20 11:45:14"/>
+  </folder>
+  <file name="file2" time="2026-02-20 11:45:14" size="1919810" keywords="关键词1 关键词2"/>
 </directory>
 ```
 
@@ -224,7 +226,7 @@ Dify的安装与部署参见[Dify Docs-使用Docker Compose部署Dify](https://d
 |p|string|否|要切换到的目录，缺省则返回当前工作目录|
 
 #### 请求示例
-`curl -X GET http://example.com:port/cd`
+`curl -X GET http://example.com:port/cd?p=/test/folder1`
 `curl -X GET http://example.com:port/cd`
 
 #### 响应示例
