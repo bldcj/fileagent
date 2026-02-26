@@ -512,15 +512,11 @@ curl -X GET http://example.com:port/lastdir
 
 ## 相关项目
 - [Dify](https://github.com/langgenius/dify)
-
 - [Ollama](https://github.com/ollama/ollama)
-
 - [flask](https://github.com/pallets/flask)
-
 - [Vue](https://github.com/vuejs/core)
-
 - [Vuetify](https://github.com/vuetifyjs/vuetify)
-
 - [axios](https://github.com/axios/axios)
-
 - [fetch-event-source](https://github.com/Azure/fetch-event-source)
+- [python-docx](https://github.com/python-openxml/python-docx)
+- [pdfplumber](https://github.com/jsvine/pdfplumber)
