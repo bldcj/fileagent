@@ -804,7 +804,7 @@ export default {
                 this.chatRecords[index].showThought=null;
                 this.chatRecords[index].type='answer';
                 console.log(this.chatRecords);
-                console.log(this.chatRecords[index].message.match(/^\{\S*\}$/));
+                console.log(this.chatRecords[index].message.match(/^\{[\s\S]*\}$/));
                 for(let r in this.chatRecords){
                   if(!this.chatRecords[r].thought&&this.chatRecords.source=='model'){
                     this.chatRecords.splice(r,1);
@@ -883,14 +883,22 @@ export default {
                 taskID=d.task_id;
               }
               this.chatRecords
-              this.keywordContext=this.keywordContext+d.answer;
-              lastMessage=d.answer;
+              if(d.answer){
+                this.keywordContext=this.keywordContext+d.answer;
+                lastMessage=d.answer;
+              }
             }
             else{
               if(d.event=='message_end'){
-                console.log(this.keywordContext);
                 this.filesForKeywords[file].stat=true;
-                this.filesForKeywords[file].keywords=JSON.parse(lastMessage).keywords;
+                if(lastMessage.match(/^\{[\s\S]*\}$/)){
+                  this.filesForKeywords[file].keywords=JSON.parse(lastMessage).keywords;
+                }
+                else{
+                  if(this.keywordContext.match(/^\{[\s\S]*\}$/)){
+                    this.filesForKeywords[file].keywords=JSON.parse(this.keywordContext).keywords;
+                  }
+                }
                 console.log(this.filesForKeywords);
                 controller.abort();
               }
@@ -899,7 +907,6 @@ export default {
         },
         onerror:(err)=>{
           console.log(err);
-          console.log(this.keywordContext);
           console.log(e)
           controller.abort();
         }
@@ -1131,7 +1138,7 @@ export default {
     }
   },
   async created(){
-    await this.setPreferences();
+    await this.getPreferences();
     if(this.preferences.rememberPath){
       await this.$axios({
         method:'get',

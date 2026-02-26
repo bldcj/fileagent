@@ -169,11 +169,11 @@ Dify的安装与部署参见[Dify Docs-使用Docker Compose部署Dify](https://d
 
 主界面分为三部分
 
--上方为标题栏，点击右侧按钮可以打开设置面板
+- 上方为标题栏，点击右侧按钮可以打开设置面板
 
--左侧为文件管理器，由可下拉选择父目录的地址栏和文件列表组成。文件管理器左侧的按钮为复制、粘贴等功能按钮
+- 左侧为文件管理器，由可下拉选择父目录的地址栏和文件列表组成。文件管理器左侧的按钮为复制、粘贴等功能按钮
 
--右侧为对话区，可以在文本框内输入指令并发送，与模型对话。对话结果显示在上方的聊天窗口中。模型的部分响应会被包装为标签，点击可以展开并执行对应的文件操作。
+- 右侧为对话区，可以在文本框内输入指令并发送，与模型对话。对话结果显示在上方的聊天窗口中。模型的部分响应会被包装为标签，点击可以展开并执行对应的文件操作。
 
 ## 文件和目录结构
 |文件/目录|描述|
@@ -511,16 +511,16 @@ curl -X GET http://example.com:port/lastdir
 `/test`
 
 ## 相关项目
--[Dify](https://github.com/langgenius/dify)
+- [Dify](https://github.com/langgenius/dify)
 
--[Ollama](https://github.com/ollama/ollama)
+- [Ollama](https://github.com/ollama/ollama)
 
--[flask](https://github.com/pallets/flask)
+- [flask](https://github.com/pallets/flask)
 
--[Vue](https://github.com/vuejs/core)
+- [Vue](https://github.com/vuejs/core)
 
--[Vuetify](https://github.com/vuetifyjs/vuetify)
+- [Vuetify](https://github.com/vuetifyjs/vuetify)
 
--[axios](https://github.com/axios/axios)
+- [axios](https://github.com/axios/axios)
 
--[fetch-event-source](https://github.com/Azure/fetch-event-source)
+- [fetch-event-source](https://github.com/Azure/fetch-event-source)
